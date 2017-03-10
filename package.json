@@ -11,6 +11,13 @@
     "ultrasonic"
   ],
   "author": "yovany@robotois.com",
+  "contributors": [
+    {
+      "name": "Armando Gonzalez",
+      "email": "iam@armando.mx",
+      "url": "http://armando.mx/"
+    }
+  ],
   "license": "ISC",
   "dependencies": {
     "bindings": "^1.2.1"

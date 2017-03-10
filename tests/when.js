@@ -1,18 +1,16 @@
-var _usonic = require('../index.js'),
-  usonic = new _usonic(5); // Especificar conector
+const DSensor = require('../index.js');
 
-usonic.when(15,()=>{
-  console.log("lol la distancia es 15cm!!");
-})
+const distance = new DSensor(5); // Especificar conector
 
-// setInterval(()=>{ // Estado ocioso
-//
-// },10000);
+distance.when(15, () => {
+  /* eslint-disable no-console */
+  console.log('lol la distancia es 15cm!!');
+});
 
-process.on('SIGTERM', function () {
+process.on('SIGTERM', () => {
   process.exit();
 });
 
-process.on('SIGINT', function () {
+process.on('SIGINT', () => {
   process.exit();
 });
