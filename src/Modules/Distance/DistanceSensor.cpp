@@ -191,7 +191,7 @@ bool DistanceSensor::connectionTest(){
 }
 
 void DistanceSensor::release(){
-    printf("[DistanceSensor] => Released\n");
     IOHeader->release();
     delete IOHeader;
+    printf("[DistanceSensor] => Released\n");
 }
