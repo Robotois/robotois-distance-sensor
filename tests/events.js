@@ -5,7 +5,7 @@ distance.enableEvents();
 
 distance.on('value', (dist) => {
   /* eslint-disable no-console */
-  console.log(`La distancia es: ${dist}`);
+  console.log(`La distancia es: ${dist} cm`);
 });
 
 process.on('SIGTERM', () => {
