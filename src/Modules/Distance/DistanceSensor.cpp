@@ -56,18 +56,18 @@ void DistanceSensor::initialize(uint8_t header){
 }
 
 float DistanceSensor::getValue(){
-    return measure(2);
+    return measure(1);
 }
 
 uint8_t DistanceSensor::getBasicValue(){
-    return (uint8_t)(std::round(measure(2)));
+    return (uint8_t)(std::round(measure(1)));
 }
 
 float DistanceSensor::measure(uint8_t samples){
     unsigned int echoSum = 0; // Echo length sum [us]
     float average = 0.0f;
     unsigned int microseconds;
-    unsigned int maxWaitTime = 80000; // 30ms => half the mearuse cycle
+    unsigned int maxWaitTime = 70000; // 30ms => half the mearuse cycle
 
     for(uint8_t i = 0; i < samples; i++){
         auto startTime = std::chrono::high_resolution_clock::now();
