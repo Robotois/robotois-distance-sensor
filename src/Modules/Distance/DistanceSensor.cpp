@@ -65,24 +65,24 @@ uint8_t DistanceSensor::getBasicValue(){
 
 float DistanceSensor::measure(uint8_t samples){
     unsigned int echoSum = 0; // Echo length sum [us]
-    float average = 0.0f;
-    unsigned int microseconds;
-    unsigned int maxWaitTime = 70000; // 30ms => half the mearuse cycle
+    // float average = 0.0f;
+    // unsigned int microseconds;
+    // unsigned int maxWaitTime = 60000; // 30ms => half the mearuse cycle
 
-    for(uint8_t i = 0; i < samples; i++){
-        auto startTime = std::chrono::high_resolution_clock::now();
+    // for(uint8_t i = 0; i < samples; i++){
+    //     auto startTime = std::chrono::high_resolution_clock::now();
         echoSum += readSensor();
 
-        auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
-        microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
-        while(microseconds < maxWaitTime){
-            auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
-            microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
-        }
-    }
+    //     auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+    //     microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
+    //     while(microseconds < maxWaitTime){
+    //         auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+    //         microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
+    //     }
+    // }
     // Se retorna el promedio del tiempo en [ns]
-    average = (( (float)echoSum/samples ))/58.0f; // La regla es T[us]/58 = dist[cm]
-    return average;
+    // average = (( (float)echoSum/samples ))/58.0f; // La regla es T[us]/58 = dist[cm]
+    return (float) echoSum/58.0f;
 }
 
 unsigned int DistanceSensor::readSensor(){
