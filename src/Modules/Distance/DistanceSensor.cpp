@@ -67,7 +67,7 @@ float DistanceSensor::measure(uint8_t samples){
     unsigned int echoSum = 0; // Echo length sum [us]
     float average = 0.0f;
     unsigned int microseconds;
-    unsigned int maxWaitTime = 60000; // 30ms => half the mearuse cycle
+    unsigned int maxWaitTime = 80000; // 30ms => half the mearuse cycle
 
     for(uint8_t i = 0; i < samples; i++){
         auto startTime = std::chrono::high_resolution_clock::now();
@@ -79,7 +79,6 @@ float DistanceSensor::measure(uint8_t samples){
             auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
             microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
         }
-//        mDelay(60); // Se da un tiempo al sensor para evitar saturarlo
     }
     // Se retorna el promedio del tiempo en [ns]
     average = (( (float)echoSum/samples ))/58.0f; // La regla es T[us]/58 = dist[cm]
@@ -91,14 +90,11 @@ unsigned int DistanceSensor::readSensor(){
 
     // High enable, cuando se detecta un alto se dispara un evento EDS (Event Detect Status)
     // - Enviar el trigger
-//    IOHeader->write(triggerPin,HIGH);
     IOHeader->io1_write(HIGH);
     uDelay(10); // 10us de trigger
-//    IOHeader->write(triggerPin,LOW);
     IOHeader->io1_write(LOW);
 
     // - Rise Event Enable
-//    IOHeader->riseEnable(echoPin);
     IOHeader->io2_riseEnable();
 
     echoTime = readEcho();
@@ -114,40 +110,36 @@ unsigned int DistanceSensor::readEcho(){
 
     while(true){
       // Echo Signal has arrived
-//        if(IOHeader->riseDetected(echoPin)){
-        if(IOHeader->io2_riseDetected()){
-            // -- Start measuring the Echo time length
-            startTime = std::chrono::high_resolution_clock::now();
-            // -- Enble fall edge event on the echo pin
-//            IOHeader->fallEnable(echoPin);
-            IOHeader->io2_fallEnable();
+      if(IOHeader->io2_riseDetected()){
+        // -- Start measuring the Echo time length
+        startTime = std::chrono::high_resolution_clock::now();
+        // -- Enble fall edge event on the echo pin
+        IOHeader->io2_fallEnable();
 
-            while(true){
-                // -- Echo has reached the end
-//                if(IOHeader->fallDetected(echoPin)){
-                if(IOHeader->io2_fallDetected()){
-
-                      elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
-                      microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
-                      break;
-                }
+        while(true){
+            // -- Echo has reached the end
+            if(IOHeader->io2_fallDetected()){
+                elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+                microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
+                break;
             }
+        }
 
-            echolength = microseconds;
-            if(echolength > 11650){
-                echolength = 11650;
-            }
-            break;
-          }
+        echolength = microseconds;
+        if(echolength > 17400){
+            echolength = 17400;
+        }
+        break;
+      }
 
       // - Si nunca llega el echo, se manda una distancia de 200[cm]
-        elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
-        microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
+      elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+      microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
 
-        if(microseconds > maxWaitTime){
-          echolength = 11650;
-          break;
-        }
+      if(microseconds > maxWaitTime){
+        echolength = 17400;
+        break;
+      }
     }
     return echolength;
 }
@@ -160,19 +152,15 @@ bool DistanceSensor::connectionTest(){
 
 
     // - Send the trigger
-//    IOHeader->write(triggerPin,HIGH);
     IOHeader->io1_write(HIGH);
     uDelay(10); // 10us de trigger
-//    IOHeader->write(triggerPin,LOW);
     IOHeader->io1_write(LOW);
 
     // - Rise Event Enable
-//    IOHeader->riseEnable(echoPin);
     IOHeader->io2_riseEnable();
 
     while(true){
         // Echo Signal has arrived
-//        if(IOHeader->riseDetected(echoPin)){
         if(IOHeader->io2_riseDetected()){
             mDelay(60);
             return true;
