@@ -3,7 +3,7 @@
 
 #include <node.h>
 #include <node_object_wrap.h>
-#include "src/Modules/Distance/DistanceSensor.h"
+#include "../Modules/Distance/DistanceSensor.h"
 
 class DistanceWrapper : public node::ObjectWrap {
 public:

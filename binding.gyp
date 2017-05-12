@@ -2,7 +2,7 @@
   "targets": [
     {
       "target_name": "DistanceSensor",
-      "sources": [ "DistanceSensor.cpp","DistanceWrapper.cpp",
+      "sources": [ "src/Wrapper/DistanceSensor.cpp","src/Wrapper/DistanceWrapper.cpp",
       "src/Modules/Distance/DistanceSensor.cpp",
       "src/Libraries/DigitalIO/DigitalHeader.cpp",
       "src/Libraries/Timer/AccurateTiming.cpp"

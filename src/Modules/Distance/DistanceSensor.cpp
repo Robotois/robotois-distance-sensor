@@ -59,8 +59,8 @@ float DistanceSensor::getValue(){
     return measure(1);
 }
 
-uint8_t DistanceSensor::getBasicValue(){
-    return (uint8_t)(std::round(measure(1)));
+uint16_t DistanceSensor::getBasicValue(){
+    return (uint16_t)(std::round(measure(1)));
 }
 
 float DistanceSensor::measure(uint8_t samples){
@@ -115,24 +115,26 @@ unsigned int DistanceSensor::readEcho(){
         startTime = std::chrono::high_resolution_clock::now();
         // -- Enble fall edge event on the echo pin
         IOHeader->io2_fallEnable();
-
+        // std::cout << "Rise Detected" << '\n';
         while(true){
+            elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+            microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
+
             // -- Echo has reached the end
             if(IOHeader->io2_fallDetected()){
-                elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
-                microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
-                break;
+              echolength = microseconds;
+              break;
             }
-        }
-
-        echolength = microseconds;
-        if(echolength > 17400){
-            echolength = 17400;
+            // -- It is taking too long for the end to arrive
+            if(microseconds > 17400){
+              echolength = 17400;
+              break;
+            }
         }
         break;
       }
 
-      // - Si nunca llega el echo, se manda una distancia de 200[cm]
+      // - Si nunca llega el echo, se manda una distancia de 300[cm]
       elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
       microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
 

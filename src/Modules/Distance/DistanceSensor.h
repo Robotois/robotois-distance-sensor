@@ -19,7 +19,7 @@ public:
     virtual ~DistanceSensor();
 
     float getValue();
-    uint8_t getBasicValue();
+    uint16_t getBasicValue();
 
     void initialize(uint8_t header);
 

@@ -3,9 +3,9 @@ const DSensor = require('../index.js');
 const distance = new DSensor(1); // Especificar conector
 
 setInterval(() => {
-  const dist = distance.getBasicValue();
+  const dist = distance.getValue();
   console.log(`La distancia es: ${dist}`);
-}, 500);
+}, 250);
 
 process.on('SIGTERM', () => {
   process.exit();
