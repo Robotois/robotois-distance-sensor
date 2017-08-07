@@ -3,7 +3,7 @@ const DSensor = require('../index.js');
 const distance = new DSensor(5); // Especificar conector
 distance.enableEvents();
 
-distance.on('value', (dist) => {
+distance.on('medicion', (dist) => {
   /* eslint-disable no-console */
   console.log(`La distancia es: ${dist} cm`);
 });

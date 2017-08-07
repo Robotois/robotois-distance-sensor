@@ -9,7 +9,7 @@
 #define	DISTANCESENSOR_H
 
 #include <bcm2835.h>
-#include "../../Libraries/DigitalIO/DigitalHeader.h"
+#include "./libraries/robotois-digital-header/DigitalHeader.h"
 
 class DistanceSensor {
 public:

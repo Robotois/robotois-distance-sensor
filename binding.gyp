@@ -2,10 +2,11 @@
   "targets": [
     {
       "target_name": "DistanceSensor",
-      "sources": [ "src/Wrapper/DistanceSensor.cpp","src/Wrapper/DistanceWrapper.cpp",
-      "src/Modules/Distance/DistanceSensor.cpp",
-      "src/Libraries/DigitalIO/DigitalHeader.cpp",
-      "src/Libraries/Timer/AccurateTiming.cpp"
+      "sources": [
+          "src/wrapper/DistanceSensor.cpp",
+          "src/wrapper/DistanceWrapper.cpp",
+          "src/DistanceSensor.cpp",
+          "src/libraries/robotois-digital-header/DigitalHeader.cpp",
       ],
       "libraries": ["-l bcm2835","-l rt"]
     }

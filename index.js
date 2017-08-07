@@ -32,11 +32,9 @@ DistanceSensor.prototype.getBasicValue = function getBasicValue() {
 
 DistanceSensor.prototype.enableEvents = function enableEvents() {
   if (!this.eventInterval) {
-    let dist;
-    this.eventInterval = setInterval(() => { // Mediciones cada 500ms
-      dist = this.getBasicValue();
-      this.emit('value', dist);
-    }, 500);
+    this.eventInterval = setInterval(() => {
+      this.emit('medicion', this.getBasicValue());
+    }, 250);
   }
 };
 
@@ -44,15 +42,15 @@ DistanceSensor.prototype.distToString = function distToString(dist) {
   return (`     ${dist.toFixed(1).toString()}`).slice(-5);
 };
 
-DistanceSensor.prototype.when = function when(value, callback) {
-  this.enableEvents();
-  this.on('value', (dist) => {
-    console.log(`Distancia: ${dist} cm`);
-    if (dist == value) {
-      callback();
-    }
-  });
-};
+// DistanceSensor.prototype.when = function when(value, callback) {
+//   this.enableEvents();
+//   this.on('value', (dist) => {
+//     console.log(`Distancia: ${dist} cm`);
+//     if (dist == value) {
+//       callback();
+//     }
+//   });
+// };
 
 DistanceSensor.prototype.release = function release() {
   clearInterval(this.eventInterval);
