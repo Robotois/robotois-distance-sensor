@@ -53,33 +53,34 @@ void DistanceSensor::initialize(uint8_t header){
 }
 
 float DistanceSensor::getValue(){
-    return measure(1);
+    return measure(2);
 }
 
 uint16_t DistanceSensor::getBasicValue(){
-    return (uint16_t)(std::round(measure(1)));
+    return (uint16_t)(std::round(measure(2)));
 }
 
 float DistanceSensor::measure(uint8_t samples){
     unsigned int echoSum = 0; // Echo length sum [us]
-    // float average = 0.0f;
-    // unsigned int microseconds;
-    // unsigned int maxWaitTime = 60000; // 30ms => half the mearuse cycle
+    float average = 0.0f;
+    unsigned int millis;
+    unsigned int maxWaitTime = 60; // 30ms => half the mearuse cycle
 
-    // for(uint8_t i = 0; i < samples; i++){
-    //     auto startTime = std::chrono::high_resolution_clock::now();
+    for(uint8_t i = 0; i < samples; i++){
+        auto startTime = std::chrono::high_resolution_clock::now();
         echoSum += readSensor();
 
-    //     auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
-    //     microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
-    //     while(microseconds < maxWaitTime){
-    //         auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
-    //         microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
-    //     }
-    // }
+        auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+        millis = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime).count();
+        while(millis < maxWaitTime){
+            elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
+            millis = std::chrono::duration_cast<std::chrono::milliseconds>(elapsedTime).count();
+        }
+    }
     // Se retorna el promedio del tiempo en [ns]
-    // average = (( (float)echoSum/samples ))/58.0f; // La regla es T[us]/58 = dist[cm]
-    return (float) echoSum/58.0f;
+    average = (( (float) echoSum / samples ))/58.0f; // La regla es T[us]/58 = dist[cm]
+//    return (float) echoSum/58.0f;
+    return average;
 }
 
 unsigned int DistanceSensor::readSensor(){
@@ -88,12 +89,8 @@ unsigned int DistanceSensor::readSensor(){
     // High enable, cuando se detecta un alto se dispara un evento EDS (Event Detect Status)
     // - Enviar el trigger
     IOHeader->io2_write(HIGH);
-//    uDelay(10); // 10us de trigger
     std::this_thread::sleep_for(std::chrono::microseconds(10));
     IOHeader->io2_write(LOW);
-
-    // - Rise Event Enable
-    IOHeader->io1_riseEnable();
 
     echoTime = readEcho();
     return echoTime;
@@ -103,33 +100,27 @@ unsigned int DistanceSensor::readEcho(){
     auto startTime = std::chrono::high_resolution_clock::now();
     auto elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
     unsigned int maxWaitTime = 30000; // 30ms => half the mearuse cycle
-    unsigned int microseconds;
-    unsigned int echolength = 0;
+    unsigned int microseconds, maxLength = 17400;
+//    unsigned int echolength = 0;
 
     while(true){
       // Echo Signal has arrived
-      if(IOHeader->io1_riseDetected()){
+      if(IOHeader->io1_read() == 1){
         // -- Start measuring the Echo time length
         startTime = std::chrono::high_resolution_clock::now();
-        // -- Enble fall edge event on the echo pin
-        IOHeader->io1_fallEnable();
-        // std::cout << "Rise Detected" << '\n';
         while(true){
             elapsedTime = std::chrono::high_resolution_clock::now() - startTime;
             microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
 
             // -- Echo has reached the end
-            if(IOHeader->io1_fallDetected()){
-              echolength = microseconds;
-              break;
+            if(IOHeader->io1_read() == 0){
+                return microseconds;
             }
             // -- It is taking too long for the end to arrive
-            if(microseconds > 17400){
-              echolength = 17400;
-              break;
+            if(microseconds > maxWaitTime){
+                return maxLength;
             }
         }
-        break;
       }
 
       // - Si nunca llega el echo, se manda una distancia de 300[cm]
@@ -137,11 +128,10 @@ unsigned int DistanceSensor::readEcho(){
       microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsedTime).count();
 
       if(microseconds > maxWaitTime){
-        echolength = 17400;
-        break;
+        return maxLength;
       }
     }
-    return echolength;
+    return 0;
 }
 
 bool DistanceSensor::connectionTest(){
