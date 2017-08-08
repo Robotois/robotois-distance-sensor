@@ -53,11 +53,11 @@ void DistanceSensor::initialize(uint8_t header){
 }
 
 float DistanceSensor::getValue(){
-    return measure(2);
+    return measure(1);
 }
 
 uint16_t DistanceSensor::getBasicValue(){
-    return (uint16_t)(std::round(measure(2)));
+    return (uint16_t)(std::round(measure(1)));
 }
 
 float DistanceSensor::measure(uint8_t samples){
