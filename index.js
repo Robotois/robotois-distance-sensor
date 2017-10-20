@@ -30,27 +30,30 @@ DistanceSensor.prototype.getBasicValue = function getBasicValue() {
   return this.distance.getBasicValue();
 };
 
-DistanceSensor.prototype.enableEvents = function enableEvents() {
+DistanceSensor.prototype.publishNow = function publishNow() {
+  this.mqttClient.publish(this.myTopic, this.getBasicValue().toString());
+};
+
+DistanceSensor.prototype.enableEvents = function enableEvents(mqttConfig) {
+  let prevValue = this.getBasicValue();
+  if (mqttConfig) {
+    this.mqttClient = mqttConfig.mqttClient;
+    this.myTopic = `sensors/distance${mqttConfig.instance}`;
+    this.mqttClient.publish('registerTopic', this.myTopic);
+  }
   if (!this.eventInterval) {
     this.eventInterval = setInterval(() => {
-      this.emit('medicion', this.getBasicValue());
+      const currentValue = this.getBasicValue();
+      if (currentValue !== prevValue) {
+        this.emit('medicion', currentValue);
+        if (this.mqttClient) {
+          this.mqttClient.publish(this.myTopic, currentValue.toString());
+        }
+        prevValue = currentValue;
+      }
     }, 250);
   }
 };
-
-DistanceSensor.prototype.distToString = function distToString(dist) {
-  return (`     ${dist.toFixed(1).toString()}`).slice(-5);
-};
-
-// DistanceSensor.prototype.when = function when(value, callback) {
-//   this.enableEvents();
-//   this.on('value', (dist) => {
-//     console.log(`Distancia: ${dist} cm`);
-//     if (dist == value) {
-//       callback();
-//     }
-//   });
-// };
 
 DistanceSensor.prototype.release = function release() {
   clearInterval(this.eventInterval);
