@@ -51,7 +51,7 @@ DistanceSensor.prototype.enableEvents = function enableEvents(mqttConfig) {
         }
         prevValue = currentValue;
       }
-    }, 250);
+    }, 500);
   }
 };
 
