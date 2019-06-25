@@ -3,10 +3,10 @@
     {
       "target_name": "DistanceSensor",
       "sources": [
-          "src/wrapper/DistanceSensor.cpp",
-          "src/wrapper/DistanceWrapper.cpp",
-          "src/DistanceSensor.cpp",
-          "src/libraries/robotois-digital-header/DigitalHeader.cpp",
+          "src/wrapper/addon.cpp",
+          "src/wrapper/MyObject.cpp",
+          "src/lib/DistanceSensor.cpp",
+          "src/lib/robotois-digital-header/DigitalHeader.cpp",
       ],
       "libraries": ["-l bcm2835","-l rt"]
     }

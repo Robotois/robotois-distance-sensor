@@ -1,4 +1,4 @@
-const DSensor = require('bindings')('DistanceSensor');
+const addon = require('bindings')('DistanceSensor');
 const EventEmitter = require('events').EventEmitter;
 const inherits = require('util').inherits;
 
@@ -7,11 +7,11 @@ const inherits = require('util').inherits;
  * @param {int} portNumber The port number where the sensors is connected.
  * @returns {DistanceSensor} DistanceSensor object.
  */
-function DistanceSensor(portNumber) {
+function DistanceSensor(portNumber = 0) {
   const self = this;
   EventEmitter.call(this);
 
-  this.distance = new DSensor(portNumber);
+  this.distance = new addon.MyObject(portNumber);
 
   process.on('SIGINT', () => {
     self.distance.release();

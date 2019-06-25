@@ -16,8 +16,8 @@ all: digital.o distance.o main.o
 
 main.o: test.cpp
 	$(CC) $(COMPILE_FLAGS) test.cpp
-digital.o: libraries/robotois-digital-header/DigitalHeader.cpp libraries/robotois-digital-header/DigitalHeader.h
-	$(CC) $(COMPILE_FLAGS) libraries/robotois-digital-header/DigitalHeader.cpp
+digital.o: robotois-digital-header/DigitalHeader.cpp robotois-digital-header/DigitalHeader.h
+	$(CC) $(COMPILE_FLAGS) robotois-digital-header/DigitalHeader.cpp
 distance.o: DistanceSensor.cpp DistanceSensor.h
 	$(CC) $(COMPILE_FLAGS) DistanceSensor.cpp
 
