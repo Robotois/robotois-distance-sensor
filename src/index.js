@@ -8,57 +8,59 @@ const inherits = require('util').inherits;
  * @returns {DistanceSensor} DistanceSensor object.
  */
 function DistanceSensor(portNumber = 0) {
-  const self = this;
-  EventEmitter.call(this);
+  EventEmitter.call(this)
+  const emitter = this
 
-  this.distance = new addon.MyObject(portNumber);
+  const distance = new addon.MyObject(portNumber)
+  let publish = null
+  let eventInterval = null
+  let toiId = null
+  let updateTopic= null
+
+  this.getValue = function() {
+    return distance.getValue();
+  }
+  
+  this.getBasicValue = function() {
+    return distance.getBasicValue();
+  }
+
+  this.getState = function() {
+    return `{"state":{"reported":{"${toiId}":${this.getBasicValue()}}}}`
+  }
+  
+  this.enableEvents = function(mqttConfig) {
+    let prevValue = distance.getBasicValue()
+    if (mqttConfig) {
+      publish = mqttConfig.publish;
+      updateTopic = mqttConfig.updateTopic;
+      toiId = `distance${mqttConfig.instance}`
+      publish(updateTopic, this.getState());
+    }
+    if (!eventInterval) {
+      eventInterval = setInterval(() => {
+        const currentValue = distance.getBasicValue();
+        emitter.emit('medicion', currentValue);
+        if (publish) {
+          publish(updateTopic, this.getState());
+        }
+      }, 1000);
+    }
+  };
+  
+  this.release = function() {
+    clearInterval(eventInterval);
+    distance.release();
+  }
 
   process.on('SIGINT', () => {
-    self.distance.release();
+    distance.release();
   });
-
+  
   process.on('SIGTERM', () => {
-    self.distance.release();
+    distance.release();
   });
 }
-
-DistanceSensor.prototype.getValue = function getValue() {
-  return this.distance.getValue();
-};
-
-DistanceSensor.prototype.getBasicValue = function getBasicValue() {
-  return this.distance.getBasicValue();
-};
-
-DistanceSensor.prototype.publishNow = function publishNow() {
-  this.mqttClient.publish(this.myTopic, this.getBasicValue().toString());
-};
-
-DistanceSensor.prototype.enableEvents = function enableEvents(mqttConfig) {
-  let prevValue = this.getBasicValue();
-  if (mqttConfig) {
-    this.mqttClient = mqttConfig.mqttClient;
-    this.myTopic = `sensors/distance${mqttConfig.instance}`;
-    this.mqttClient.publish('registerTopic', this.myTopic);
-  }
-  if (!this.eventInterval) {
-    this.eventInterval = setInterval(() => {
-      const currentValue = this.getBasicValue();
-      if (currentValue !== prevValue) {
-        this.emit('medicion', currentValue);
-        if (this.mqttClient) {
-          this.mqttClient.publish(this.myTopic, currentValue.toString());
-        }
-        prevValue = currentValue;
-      }
-    }, 500);
-  }
-};
-
-DistanceSensor.prototype.release = function release() {
-  clearInterval(this.eventInterval);
-  this.distance.release();
-};
 
 inherits(DistanceSensor, EventEmitter);
 

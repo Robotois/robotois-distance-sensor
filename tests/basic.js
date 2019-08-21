@@ -1,6 +1,6 @@
 const DSensor = require('../src/index.js');
 
-const distance = new DSensor(5); // Especificar conector
+const distance = DSensor(1); // Especificar conector
 
 setInterval(() => {
   const dist = distance.getBasicValue();

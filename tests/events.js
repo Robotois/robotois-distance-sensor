@@ -1,6 +1,6 @@
 const DSensor = require('../index.js');
 
-const distance = new DSensor(5); // Especificar conector
+const distance = DSensor(1); // Especificar conector
 distance.enableEvents();
 
 distance.on('medicion', (dist) => {
